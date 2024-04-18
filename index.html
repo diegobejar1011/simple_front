@@ -4,26 +4,50 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              clifford: '#da373d',
+            }
+          }
+        }
+      }
+    </script>
   </head>
-  <body>
-    <p>Producto</p>
-    <input type="text" id="producto_req" />
-    <p>Cantidad</p>
-    <input type="number" id="cantidad_req" />
-    <p>Precio</p>
-    <input type="number" id="precio_req" />
-    <button onclick="createOrder(event)">Iniciar orden</button>
+  <body class="flex justify-center items-center bg-sky-200">
+    <div class=" mt-20 bg-white text-black w-96 rounded-md shadow-lg flex flex-col p-4">
+     <div class="mb-5">
+        <label class="text-center  text-2xl font-bold block">Producto</label>
+        <input class="w-full rounded-md shadow-md outline-none focus:ring-2 focus:ring-sky-100 focus:border-transparent " type="text" id="producto_req" />
+     </div>
+     <div class="mb-5">
+      <label class="text-center text-2xl font-bold block">Cantidad</label>
+      <input class="w-full rounded-md shadow-md outline-none focus:ring-2 focus:ring-sky-100 focus:border-transparent" type="number" id="cantidad_req" />
+     </div>
+      <div class="mb-5">
+        <label class="text-center text-2xl font-bold block">Precio</label>
+      <input class="w-full rounded-md shadow-md outline-none focus:ring-2 focus:ring-sky-100 focus:border-transparent " type="number" id="precio_req" />
+      </div>
+     <div class="flex justify-center items-center my-5">
+      <button class="bg-blue-400 rounded-md shadow-md p-2 text-white hover:bg-blue-600 transition-colors " onclick="createOrder(event)">Iniciar orden</button>
+     </div>
+    </div>
+   
 
-    <p>Orden pago</p>
-    <div>
-      <p>Producto</p>
-      <p id="producto_res"></p>
-      <p>Cantidad</p>
-      <p id="cantidad_res"></p>
-      <p>Precio</p>
-      <p id="precio_res"></p>
-      <p>Total</p>
-      <p id="total_res"></p>
+   <div class="fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-black bg-opacity-50 hidden"  id="modal">
+    <div class="bg-white rounded-lg p-6 shadow-md w-96 ">
+      <h1 class="text-center text-2xl font-bold ">Orden pago</h1>
+      <div>
+        <p class="text-black font-bold">Producto: <span class="text-gray-400" id="producto_res"></span> </p>
+        <p class="text-black font-bold">Cantidad <span class="text-gray-400" id="cantidad_res"></span></p>
+        <p class="text-black font-bold">Precio <span class="text-gray-400" id="precio_res"></span></p>
+        <p class="text-black font-bold text-center">Total</p>
+        <p class="text-center text-gray-400" id="total_res">$</p>
+    </div>
+   </div>
     </div>
     <script src="http://3.215.212.83:5000/socket.io/socket.io.js"></script>
     <script>
@@ -72,6 +96,11 @@
       });
 
       socket.on("send_message", (message)=> {
+        if(message){
+          const modal = document.getElementById("modal");
+          modal.classList.remove('hidden')
+        }
+       
         console.log(message);
         producto_res.innerText = message.product;
         cantidad_res.innerText = message.amount;
