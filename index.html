@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <p>Producto</p>
+    <input type="text" id="producto_req" />
+    <p>Cantidad</p>
+    <input type="number" id="cantidad_req" />
+    <p>Precio</p>
+    <input type="number" id="precio_req" />
+    <button onclick="createOrder(event)">Iniciar orden</button>
+
+    <p>Orden pago</p>
+    <div>
+      <p>Producto</p>
+      <p id="producto_res"></p>
+      <p>Cantidad</p>
+      <p id="cantidad_res"></p>
+      <p>Precio</p>
+      <p id="precio_res"></p>
+      <p>Total</p>
+      <p id="total_res"></p>
+    </div>
+    <script src="http://3.215.212.83:5000/socket.io/socket.io.js"></script>
+    <script>
+      async function createOrder(e) {
+        e.preventDefault();
+        const producto_req = document.getElementById("producto_req").value
+        const cantidad_req = document.getElementById("cantidad_req").value;
+        const precio_req = document.getElementById("precio_req").value;
+
+        const headers = {
+          "Content-Type": "application/json",
+        };
+        const body = {
+          product: producto_req,
+          amount: cantidad_req,
+          price: precio_req,
+        };
+
+        const req = {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify(body),
+        };
+
+        try {
+          const result = await fetch(
+            "http://44.223.209.7:4000/api/order/",
+            req
+          );
+          const data = await result.json();
+          console.log(data);
+        } catch (error) {
+          console.log(error);
+          window.alert(error.message);
+        }
+      }
+      const producto_res = document.getElementById("producto_res");
+      const cantidad_res = document.getElementById("cantidad_res");
+      const precio_res = document.getElementById("precio_res");
+      const total_res = document.getElementById("total_res");
+
+      const socket = io("http://3.215.212.83:5000/");
+
+      socket.on("connect", () => {
+        console.log(socket.id);
+      });
+
+      socket.on("send_message", (message)=> {
+        console.log(message);
+        producto_res.innerText = message.product;
+        cantidad_res.innerText = message.amount;
+        precio_res.innerText = message.price;
+        total_res.innerText = message.total;
+      })
+
+    </script>
+  </body>
+</html>
